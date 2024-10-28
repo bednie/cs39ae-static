@@ -31,9 +31,9 @@
             margin-top: 10px;
         }
         .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
             padding: 20px;
         }
         .viz-item {
@@ -44,13 +44,16 @@
         }
         .viz-item img {
             width: 100%;
-            height: auto;
+            height: 600px;
+            object-fit: contain;
+            background-color: #f8f9fa;
             border-radius: 4px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .viz-item h3 {
             color: #2c3e50;
             margin-top: 0;
+            font-size: 1.4em;
         }
         .viz-item p {
             color: #666;
@@ -61,43 +64,46 @@
             margin-bottom: 20px;
         }
         .nav a {
-            color: #3498db;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
             text-decoration: none;
-            margin: 0 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
         }
         .nav a:hover {
-            text-decoration: underline;
+            background-color: #2980b9;
         }
     </style>
 </head>
 <body>
     <nav class="nav">
         <a href="index.html">Home</a>
-        <a href="myViz.html">Visualizations</a>
     </nav>
     
     <header>
-        <h1>Data Visualizations</h1>
+        <h1>Weather Data Visualizations</h1>
         <div class="subtitle">Blair Ednie - CS-39AE</div>
     </header>
 
     <div class="gallery">
         <div class="viz-item">
-            <img src="path/to/your/visualization1.png" alt="Visualization 1">
-            <h3>Visualization Title 1</h3>
-            <p>Description of your first visualization. Explain what the data represents and any interesting insights.</p>
+            <img src="main-weather-variables.png" alt="Main Weather Variables Visualization">
+            <h3>Main Weather Variables Analysis</h3>
+            <p>Analysis of METAR variables.</p>
         </div>
         
         <div class="viz-item">
-            <img src="path/to/your/visualization2.png" alt="Visualization 2">
-            <h3>Visualization Title 2</h3>
-            <p>Description of your second visualization. Include relevant details about the data and methodology.</p>
+            <img src="temp-elev.png" alt="Temperature and Elevation Relationship">
+            <h3>Temperature vs Elevation</h3>
+            <p>Scatter plot of the relationship between temperature patterns and elevation, showing how altitude affects temperature measurements.</p>
         </div>
         
         <div class="viz-item">
-            <img src="path/to/your/visualization3.png" alt="Visualization 3">
-            <h3>Visualization Title 3</h3>
-            <p>Description of your third visualization. Highlight key findings and technical aspects.</p>
+            <img src="wind-rose.png" alt="Wind Rose Diagram">
+            <h3>Wind Rose Analysis</h3>
+            <p>Detailed wind rose diagram showing wind direction frequencies and speed distributions throughout the observation period.</p>
         </div>
     </div>
 </body>
