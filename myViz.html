@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Visualizations - Blair Ednie</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .viz-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .viz-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .viz-item h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .viz-item p {
+            color: #666;
+            margin-bottom: 0;
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="myViz.html">Visualizations</a>
+    </nav>
+    
+    <header>
+        <h1>Data Visualizations</h1>
+        <div class="subtitle">Blair Ednie - CS-39AE</div>
+    </header>
+
+    <div class="gallery">
+        <div class="viz-item">
+            <img src="path/to/your/visualization1.png" alt="Visualization 1">
+            <h3>Visualization Title 1</h3>
+            <p>Description of your first visualization. Explain what the data represents and any interesting insights.</p>
+        </div>
+        
+        <div class="viz-item">
+            <img src="path/to/your/visualization2.png" alt="Visualization 2">
+            <h3>Visualization Title 2</h3>
+            <p>Description of your second visualization. Include relevant details about the data and methodology.</p>
+        </div>
+        
+        <div class="viz-item">
+            <img src="path/to/your/visualization3.png" alt="Visualization 3">
+            <h3>Visualization Title 3</h3>
+            <p>Description of your third visualization. Highlight key findings and technical aspects.</p>
+        </div>
+    </div>
+</body>
+</html>
