@@ -1,1 +1,0 @@
-# cs39ae-static
