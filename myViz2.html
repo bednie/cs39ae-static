@@ -164,6 +164,14 @@
       svg.append("g")
         .call(yAxis);
 
+      // Add chart title
+      svg.append("text")
+        .attr("class", "chart-title")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", -margin.top / 2)
+        .text("Average Maximum Temperature in Australia");
+
       // Add axis labels
       svg.append("text")
         .attr("class", "x-label")
