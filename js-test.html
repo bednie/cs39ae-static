@@ -13,6 +13,11 @@
   <script>
     // Fetch data from URL
     d3.csv("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(data => {
+      data.forEach(d => {
+        d.date = new Date(d.date);
+        d.value = +d.value;
+      });
+      
       // Create line chart
       const lineChartSvg = d3.select("#line-chart")
         .append("svg")
