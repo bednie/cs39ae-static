@@ -6,39 +6,40 @@
 </head>
 <body>  
   <h1>Line Chart</h1>
+  <p>Data from: https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data</p>
   <label for="station-select">Select a station:</label>
   <select id="station-select"></select>
   <div id="line-chart"></div>
-
   <script>
     // Fetch data from URL
     d3.csv("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(data => {
+      // Parse year and temperature
       data.forEach(d => {
-        d.date = new Date(d.date);
-        d.value = +d.value;
+        d.Year = +d.Year;
+        d.Temp = +d.Temp;
       });
-      
+
       // Create line chart
       const lineChartSvg = d3.select("#line-chart")
         .append("svg")
         .attr("width", 500)
         .attr("height", 300);
-      
-      const xScaleLine = d3.scaleTime()
-        .domain(d3.extent(data, d => new Date(d.date)))
+
+      const xScaleLine = d3.scaleLinear()
+        .domain(d3.extent(data, d => d.Year))
         .range([50, 450]);
       
       const yScaleLine = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.value)])
+        .domain(d3.extent(data, d => d.Temp))
         .range([250, 50]);
       
       const line = d3.line()
-        .x(d => xScaleLine(new Date(d.date)))
-        .y(d => yScaleLine(d.value));
+        .x(d => xScaleLine(d.Year))
+        .y(d => yScaleLine(d.Temp));
       
       // Populate dropdown options
       const stationSelect = d3.select("#station-select");
-      const stations = [...new Set(data.map(d => d.station))];
+      const stations = [...new Set(data.map(d => d.name))];
       
       stationSelect.selectAll("option")
         .data(stations)
@@ -56,7 +57,7 @@
       });
       
       function updateLineChart(station) {
-        const filteredData = data.filter(d => d.station === station);
+        const filteredData = data.filter(d => d.name === station);
         
         lineChartSvg.selectAll(".line").remove();
         
