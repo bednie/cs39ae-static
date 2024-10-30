@@ -1,21 +1,69 @@
 <!DOCTYPE html>
-<body>
-    <script type="text/javascript">
+<html>
+<head>
+  <title>D3.js Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>  
+  <h1>Line Chart</h1>
+  <label for="station-select">Select a station:</label>
+  <select id="station-select"></select>
+  <div id="line-chart"></div>
 
-        // Function to display name
-        function greet(name) {
-            alert("Hello, " + name + "!");
-        }
-
-        // Function to calculate the sum of two numbers
-        function addNumbers(num1, num2) {
-            return num1 + num2;
-        }
-
-        // Example usage
-        greet("Karina");
-        let sum = addNumbers(5, 10);
-        console.log("Sum:", sum);
-
-    </script>
+  <script>
+    // Fetch data from URL
+    d3.json("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(data => {
+      // Create line chart
+      const lineChartSvg = d3.select("#line-chart")
+        .append("svg")
+        .attr("width", 500)
+        .attr("height", 300);
+      
+      const xScaleLine = d3.scaleTime()
+        .domain(d3.extent(data, d => new Date(d.date)))
+        .range([50, 450]);
+      
+      const yScaleLine = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value)])
+        .range([250, 50]);
+      
+      const line = d3.line()
+        .x(d => xScaleLine(new Date(d.date)))
+        .y(d => yScaleLine(d.value));
+      
+      // Populate dropdown options
+      const stationSelect = d3.select("#station-select");
+      const stations = [...new Set(data.map(d => d.station))];
+      
+      stationSelect.selectAll("option")
+        .data(stations)
+        .enter()
+        .append("option")
+        .text(d => d);
+      
+      // Draw initial line chart
+      updateLineChart(stations[0]);
+      
+      // Update line chart on dropdown change
+      stationSelect.on("change", function() {
+        const selectedStation = d3.select(this).property("value");
+        updateLineChart(selectedStation);
+      });
+      
+      function updateLineChart(station) {
+        const filteredData = data.filter(d => d.station === station);
+        
+        lineChartSvg.selectAll(".line").remove();
+        
+        lineChartSvg.append("path")
+          .datum(filteredData)
+          .attr("class", "line")
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 1.5)
+          .attr("d", line);
+      }
+    });
+  </script>
 </body>
+</html>
