@@ -157,6 +157,7 @@
         const filteredData = data.filter(d => d.name === station);
 
         svg.selectAll(".line").remove();
+        svg.selectAll(".dot").remove(); // Remove existing dots
 
         svg.append("path")
           .datum(filteredData)
