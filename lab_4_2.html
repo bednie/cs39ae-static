@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blair Ednie - Lab 4.1 Tableau Visualizations</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        main {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        p {
+            color: #34495e;
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .viz-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .viz-item img {
+            width: 100%;
+            height: 600px;
+            object-fit: contain;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .viz-item h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        .viz-item p {
+            color: #666;
+            margin-bottom: 0;
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            margin: 0 10px;
+        }
+        .nav a:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+    </nav>
+
+    <header>
+        <h1>Blair Ednie</h1>
+        <div class="subtitle">Lab 4.2 Tableau Visualizations</div>
+    </header>
+    <main>
+        <p>Lab 4.2: Tableau Visualizations</p>
+        
+        <p>These visualizations use the <code>employee_travel_1.xls</code> dataset.</p>
+        
+        <h2>Bar chart of Countries Visited by Most Frequently Visited</h2>
+        <div class="viz-item">
+          <img src="countries-visited.png" alt="Countries Visited Bar Chart">
+          <p></p>
+        </div>
+
+        <h2>Category Sales Comparison</h2>
+        <p>Sales breakdown by category:</p>
+        <ul>    
+            <li>Technology: $836k (highest performer)</li>
+            <li>Office Supplies: $719k (lowest performer)</li>
+            <li>Furniture: $742k </li>
+        </ul>
+        <div class="viz-item">
+            <img src="bar-chart-sales.png" alt="Bar Chart of Sales by Category">
+            <p>A horizontal bar chart comparing total sales across product categories. Technology leads sales performance with over $800K in sales, followed by Furniture at $742K, and Office Supplies with approximately $719K. Sales are fairly evenly distributed.</p>
+        </div>
+
+        <h2>Monthly Sales Trends</h2>
+        <p>Analysis of sales patterns from 2014-2017:</p>
+        <ul>
+            <li>Seasonal Patterns:
+                <ul>
+                    <li>Consistent year-end peaks in November-December</li>
+                    <li>Regular early-year dips in January-February</li>
+                    <li>Mid-year volatility with August-September spikes</li>
+                </ul>
+            </li>
+            <li>Year-over-Year Growth:
+                <ul>
+                    <li>2014: Peak around $80K</li>
+                    <li>2015: Lower performance but upward trend</li>
+                    <li>2016: Growth continuing, November spike to $95K</li>
+                    <li>2017: Strongest year, reaching $115K in November</li>
+                </ul>
+            </li>
+        </ul>
+        <div class="viz-item">
+            <img src="monthly-sales-trend.png" alt="Monthly Sales Trend Line Chart">
+            <p>A line chart showing monthly sales trends from 2014 to 2017. The visualization shows seasonal patterns with year-end peaks, early-year dips, and an overall upward trend in sales volume. The dotted trend line shows the consistent growth across the period, with increasing sales volatility in later years.</p>
+        </div>
+
+
+        <h2>Profit vs. Sales Analysis by Sub-Category</h2>
+        <p>Key findings from scatter plot analysis:</p>
+        <ul>
+           <li>Top Performers (High Sales & Profit):
+               <ul>
+                   <li>Copiers: $150K sales, $55K profit</li>
+                   <li>Phones: $320K sales, $40K profit</li>
+                   <li>Accessories: $150K sales, $42K profit</li>
+               </ul>
+           </li>
+           <li>Low Performers (High Sales & Low Profit, Low Sales & Low Profit, Negative Profit:
+               <ul>
+                   <li>Tables: High sales ($200K) but negative profit (-$17K)</li>
+                   <li>Machines: High sales ($175K) with minimal profit</li>
+               </ul>
+           </li>
+           <li>Efficient Performers (Good Profit Despite Lower Sales):
+               <ul>
+                   <li>Paper: $50K sales with strong $32K profit</li>
+                   <li>Binders: $180K sales with $30K profit</li>
+               </ul>
+           </li>
+        </ul>
+        <div class="viz-item">
+           <img src="scatter-plot-sales-profit.png" alt="Scatter Plot of Sales vs. Profit by Sub-Category">
+           <p>A scatter plot comparing sales and profit across product sub-categories. Point sizes indicate profit magnitude, while colors distinguish different sub-categories. The visualization reveals several interesting patterns, from high-performing technology products to concerning performance in furniture items like tables. Some sub-categories like Paper show impressive profit efficiency despite lower sales volumes.</p>
+        </div>
+
+        <h2>Sales Distribution by Shipping Mode</h2>
+        <p>Analysis of sales across different shipping methods:</p>
+        <ul>
+           <li>Sales by Shipping Mode:
+               <ul>
+                   <li>Standard Class: $1.4M (highest volume)</li>
+                   <li>Second Class: $450K</li>
+                   <li>First Class: $350K</li>
+                   <li>Same Day: $150K (lowest volume)</li>
+               </ul>
+           </li>
+           <li>Insights:
+               <ul>
+                   <li>Customers prefer standard shipping options, probably for low cost</li>
+                   <li>Low uptake of premium Same Day shipping service, but probably wins loyalty for customers who really need fast delivery</li>
+               </ul>
+           </li>
+        </ul>
+        <div class="viz-item">
+           <img src="shipping-mode-sales.png" alt="Bar Chart of Sales by Shipping Mode">
+           <p>A horizontal bar chart showing sales distribution across different shipping modes. Standard Class shipping dominates sales volume, while Same Day shipping shows the lowest usage. This suggests customers generally prioritize cost-effective shipping options over speed of delivery, which has important implications for logistics and inventory planning.</p>
+        </div>
+    </main>
+</body>
+</html>
