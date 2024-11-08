@@ -387,7 +387,7 @@
             const stations = [...new Set(data.map(d => d.name))];
             d3.select("#station-select")
                 .selectAll("option")
-                .data(stations)
+                .data(stations.sort())
                 .enter()
                 .append("option")
                 .text(d => d);
