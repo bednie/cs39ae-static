@@ -508,7 +508,7 @@
     
             // Initial plots
             updateSingleStation(stations[0]);
-            updateSpaghettiPlot(minElev, maxElev);
+            updateSpaghettiPlot(Math.floor(minElev), Math.ceil(maxElev));
     
             // Event listeners
             d3.select("#station-select").on("change", function() {
