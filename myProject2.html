@@ -127,7 +127,7 @@
                 <input type="number" id="min-elevation" value="0">
                 <label for="max-elevation">Max Elevation (m):</label>
                 <input type="number" id="max-elevation" value="2000">
-                <button id="update-elevation">Update Filter</button>
+                <button id="update-elevation">Filter</button>
             </div>
             <div id="spaghetti-plot"></div>
         </div>
@@ -484,6 +484,36 @@
                 const minElev = +d3.select("#min-elevation").property("value");
                 const maxElev = +d3.select("#max-elevation").property("value");
                 updateSpaghettiPlot(minElev, maxElev);
+            });
+            
+            // Add Enter key listener to temperature filter inputs
+            d3.select("#min-temp").on("keypress", function(event) {
+                if (event.keyCode === 13 || event.key === "Enter") {
+                    filterByTemperature();
+                }
+            });
+            
+            d3.select("#max-temp").on("keypress", function(event) {
+                if (event.keyCode === 13 || event.key === "Enter") {
+                    filterByTemperature();
+                }
+            });
+            
+            // Add Enter key listener to elevation filter inputs
+            d3.select("#min-elevation").on("keypress", function(event) {
+                if (event.keyCode === 13 || event.key === "Enter") {
+                    const minElev = +d3.select("#min-elevation").property("value");
+                    const maxElev = +d3.select("#max-elevation").property("value");
+                    updateSpaghettiPlot(minElev, maxElev);
+                }
+            });
+            
+            d3.select("#max-elevation").on("keypress", function(event) {
+                if (event.keyCode === 13 || event.key === "Enter") {
+                    const minElev = +d3.select("#min-elevation").property("value");
+                    const maxElev = +d3.select("#max-elevation").property("value");
+                    updateSpaghettiPlot(minElev, maxElev);
+                }
             });
     
         }).catch(function(error) {
