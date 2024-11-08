@@ -238,15 +238,32 @@
             }));
     
             // Create scales for scatter plot
+            //const xScaleScatter = d3.scaleLinear()
+            //    .domain([0, d3.max(data, d => d.elev)])
+            //    .range([0, width]);
+    
+            //const yScaleScatter = d3.scaleLinear()
+            //    .domain([
+            //        d3.min(stationAverages, d => d.avgTemp) - 1,
+            //        d3.max(stationAverages, d => d.avgTemp) + 1
+            //    ])
+            //    .range([height, 0]);
+
+            // Calculate min and max temperatures
+            const minTemp = d3.min(stationAverages, d => d.avgTemp);
+            const maxTemp = d3.max(stationAverages, d => d.avgTemp);
+            
+            // Set input values
+            d3.select("#min-temp").property("value", minTemp.toFixed(1));
+            d3.select("#max-temp").property("value", maxTemp.toFixed(1));
+            
+            // Create scales for scatter plot
             const xScaleScatter = d3.scaleLinear()
                 .domain([0, d3.max(data, d => d.elev)])
                 .range([0, width]);
-    
+            
             const yScaleScatter = d3.scaleLinear()
-                .domain([
-                    d3.min(stationAverages, d => d.avgTemp) - 1,
-                    d3.max(stationAverages, d => d.avgTemp) + 1
-                ])
+                .domain([minTemp - 1, maxTemp + 1])
                 .range([height, 0]);
     
             // Add axes to scatter plot
@@ -351,11 +368,11 @@
             // Event listener for filter button
             d3.select("#filter-temp").on("click", filterByTemperature);
             
-            // Event listener for reset filter button
+            // Event listener for scatter plot reset button
             d3.select("#reset-temp").on("click", () => {
-                // Reset input values
-                d3.select("#min-temp").property("value", "");
-                d3.select("#max-temp").property("value", "");
+                // Reset input values to min/max
+                d3.select("#min-temp").property("value", minTemp.toFixed(1));
+                d3.select("#max-temp").property("value", maxTemp.toFixed(1));
                 
                 // Reset the points
                 scatterSvg.selectAll(".point")
