@@ -130,6 +130,17 @@
             </div>
             <div id="spaghetti-plot"></div>
         </div>
+        <div class="viz-section">
+        <h3>Temperature vs. Elevation Relationship</h3>
+        <div class="scatter-controls">
+            <input type="checkbox" id="show-all-years" checked>
+            <label for="show-all-years">Show all years</label>
+            <select id="year-select" disabled>
+                <option value="all">All Years (Average)</option>
+            </select>
+        </div>
+        <div id="scatter-plot"></div>
+    </div>
     </main>
 
     <script>
@@ -347,6 +358,114 @@
                 .attr("class", "error")
                 .text("Error loading data: " + error.message);
         });
+
+        // Create scatterplot
+        const scatterSvg = d3.select("#scatter-plot")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Calculate station averages
+            const stationAverages = Array.from(d3.group(data, d => d.name), ([name, values]) => ({
+                name: name,
+                elev: values[0].elev,
+                avgTemp: d3.mean(values, d => d.Temp),
+                lat: values[0].lat,
+                lon: values[0].lon
+            }));
+
+            // Create scales for scatter plot
+            const xScaleScatter = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.elev)])
+                .range([0, width]);
+
+            const yScaleScatter = d3.scaleLinear()
+                .domain([
+                    d3.min(stationAverages, d => d.avgTemp) - 1,
+                    d3.max(stationAverages, d => d.avgTemp) + 1
+                ])
+                .range([height, 0]);
+
+            // Add axes
+            scatterSvg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScaleScatter))
+                .append("text")
+                .attr("x", width / 2)
+                .attr("y", 40)
+                .attr("fill", "black")
+                .text("Elevation (m)");
+
+            scatterSvg.append("g")
+                .call(d3.axisLeft(yScaleScatter))
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -40)
+                .attr("x", -height / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "black")
+                .text("Average Temperature (°C)");
+
+            // Add scatter points
+            scatterSvg.selectAll(".point")
+                .data(stationAverages)
+                .enter()
+                .append("circle")
+                .attr("class", "point")
+                .attr("cx", d => xScaleScatter(d.elev))
+                .attr("cy", d => yScaleScatter(d.avgTemp))
+                .attr("r", 5)
+                .attr("fill", "steelblue")
+                .attr("opacity", 0.6)
+                .on("mouseover", (event, d) => {
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html(`
+                        Station: ${d.name}<br/>
+                        Elevation: ${d.elev}m<br/>
+                        Avg Temperature: ${d.avgTemp.toFixed(2)}°C<br/>
+                        Location: ${d.lat}°, ${d.lon}°
+                    `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+
+            // Add trendline
+            const regression = d3.regressionLinear()
+                .x(d => d.elev)
+                .y(d => d.avgTemp);
+
+            const regressionLine = regression(stationAverages);
+
+            scatterSvg.append("line")
+                .attr("class", "trendline")
+                .attr("x1", xScaleScatter(regressionLine[0][0]))
+                .attr("y1", yScaleScatter(regressionLine[0][1]))
+                .attr("x2", xScaleScatter(regressionLine[1][0]))
+                .attr("y2", yScaleScatter(regressionLine[1][1]))
+                .style("stroke", "red")
+                .style("stroke-dasharray", "4,4")
+                .style("stroke-width", 2);
+
+            // Add correlation coefficient
+            const correlation = d3.correlation(
+                stationAverages.map(d => d.elev),
+                stationAverages.map(d => d.avgTemp)
+            );
+
+            scatterSvg.append("text")
+                .attr("x", width - 20)
+                .attr("y", 20)
+                .attr("text-anchor", "end")
+                .text(`r = ${correlation.toFixed(3)}`);
     });
     </script>
 </body>
