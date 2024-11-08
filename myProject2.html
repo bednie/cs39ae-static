@@ -443,9 +443,9 @@
     
             // Function to update spaghetti plot
             function updateSpaghettiPlot(minElev, maxElev) {
-                const stations = d3.group(data, d => d.name);
+                const spaghettiStations = d3.group(data, d => d.name);
                 
-                const filteredStations = Array.from(stations).filter(([name, values]) => {
+                const filteredStations = Array.from(spaghettiStations).filter(([name, values]) => {
                     const elevation = values[0].elev;
                     return elevation >= minElev && elevation <= maxElev;
                 });
