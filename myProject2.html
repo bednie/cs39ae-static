@@ -128,6 +128,7 @@
                 <label for="max-elevation">Max Elevation (m):</label>
                 <input type="number" id="max-elevation" value="2000">
                 <button id="update-elevation">Filter</button>
+                <button id="reset-filter">Reset</button>
             </div>
             <div id="spaghetti-plot"></div>
         </div>
@@ -499,7 +500,17 @@
                 const maxElev = +d3.select("#max-elevation").property("value");
                 updateSpaghettiPlot(minElev, maxElev);
             });
-            
+
+            // Event listener for spaghetti plot reset button
+            d3.select(".viz-section:nth-child(2) #reset-filter").on("click", () => {
+                // Reset input values
+                d3.select("#min-elevation").property("value", "0");
+                d3.select("#max-elevation").property("value", "2000");
+                
+                // Reset the plot to show all elevations
+                updateSpaghettiPlot(0, 2000);
+            });
+                        
             // Add Enter key listener to temperature filter inputs
             d3.select("#min-temp").on("keypress", function(event) {
                 if (event.keyCode === 13 || event.key === "Enter") {
