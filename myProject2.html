@@ -193,6 +193,18 @@
                 d.Temp = +d.Temp;
                 d.elev = +d.elev;
             });
+
+            // Calculate elevation range for all stations once
+            const stations = d3.group(data, d => d.name);
+            const minElev = d3.min(Array.from(stations), ([name, values]) => values[0].elev);
+            const maxElev = d3.max(Array.from(stations), ([name, values]) => values[0].elev);
+            
+            // Set the color scale domain once
+            colorScale.domain([minElev, maxElev]);
+            
+            // Set initial input values
+            d3.select("#min-elevation").property("value", Math.floor(minElev));
+            d3.select("#max-elevation").property("value", Math.ceil(maxElev));
     
             // Setup scales for single station plot
             const xScale = d3.scaleLinear()
@@ -236,18 +248,6 @@
                 elev: values[0].elev,
                 avgTemp: d3.mean(values, d => d.Temp)
             }));
-    
-            // Create scales for scatter plot
-            //const xScaleScatter = d3.scaleLinear()
-            //    .domain([0, d3.max(data, d => d.elev)])
-            //    .range([0, width]);
-    
-            //const yScaleScatter = d3.scaleLinear()
-            //    .domain([
-            //        d3.min(stationAverages, d => d.avgTemp) - 1,
-            //        d3.max(stationAverages, d => d.avgTemp) + 1
-            //    ])
-            //    .range([height, 0]);
 
             // Calculate min and max temperatures
             const minTemp = d3.min(stationAverages, d => d.avgTemp);
@@ -450,8 +450,6 @@
                     const elevation = values[0].elev;
                     return elevation >= minElev && elevation <= maxElev;
                 });
-    
-                colorScale.domain([minElev, maxElev]);
     
                 const line = d3.line()
                     .x(d => xScale(d.Year))
