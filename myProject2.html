@@ -444,6 +444,20 @@
                 spaghettiSvg.append("g")
                     .attr("class", "axis")
                     .call(d3.axisLeft(yScale));
+
+                // Add labels to spaghetti plot
+                spaghettiSvg.append("text")
+                    .attr("class", "x-label")
+                    .attr("text-anchor", "middle")
+                    .attr("x", width / 2)
+                    .attr("y", height + 40)
+                    .text("Elevation (m)");
+        
+                spaghettiSvg.append("text")
+                    .attr("class", "y-label")
+                    .attr("text-anchor", "middle")
+                    .attr("transform", `translate(${-40},${height/2}) rotate(-90)`)
+                    .text("Temperature (°C)");
     
                 filteredStations.forEach(([name, values]) => {
                     spaghettiSvg.append("path")
