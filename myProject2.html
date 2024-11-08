@@ -267,11 +267,14 @@
                 .attr("text-anchor", "middle")
                 .attr("fill", "black")
                 .text("Average Temperature (°C)");
-
+            
             // Create trendline
-            const regressionLine = d3.regressionLinear()
-              .x(d => d.elev)
-              .y(d => d.avgTemp);
+            const xMean = d3.mean(stationAverages, d => d.elev);
+            const yMean = d3.mean(stationAverages, d => d.avgTemp);
+            const ssxy = d3.sum(stationAverages, d => (d.elev - xMean) * (d.avgTemp - yMean));
+            const ssxx = d3.sum(stationAverages, d => (d.elev - xMean) * (d.elev - xMean));
+            const slope = ssxy / ssxx;
+            const intercept = yMean - slope * xMean;
                 
             // Add scatter points
             scatterSvg.selectAll(".point")
@@ -303,16 +306,20 @@
                 });
 
             // Add the trendline
-            const trendData = regressionLine(stationAverages);
+            const x1 = 0;
+            const x2 = d3.max(stationAverages, d => d.elev);
+            const y1 = intercept + slope * x1;
+            const y2 = intercept + slope * x2;
+            
             scatterSvg.append("line")
-              .attr("class", "trendline")
-              .attr("x1", xScaleScatter(trendData[0][0]))
-              .attr("y1", yScaleScatter(trendData[0][1]))
-              .attr("x2", xScaleScatter(trendData[1][0]))
-              .attr("y2", yScaleScatter(trendData[1][1]))
-              .attr("stroke", "red")
-              .attr("stroke-width", 2)
-              .attr("stroke-dasharray", "4,4");
+                .attr("class", "trendline")
+                .attr("x1", xScaleScatter(x1))
+                .attr("y1", yScaleScatter(y1))
+                .attr("x2", xScaleScatter(x2))
+                .attr("y2", yScaleScatter(y2))
+                .attr("stroke", "red")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "4,4");
 
             // Function to filter scatter plot by temperature range
             function filterByTemperature() {
