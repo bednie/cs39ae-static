@@ -198,11 +198,10 @@
             const stations = d3.group(data, d => d.name);
             const minElev = d3.min(Array.from(stations), ([name, values]) => values[0].elev);
             const maxElev = d3.max(Array.from(stations), ([name, values]) => values[0].elev);
-            
-            // Set the color scale domain once
-            // Create color scale for elevations after we have the data
+
+            // Create color scale
             const colorScale = d3.scaleSequential(d3.interpolateViridis)
-                .domain([minElev, maxElev]);
+                .domain([0, 2000]);
             
             // Set initial input values
             d3.select("#min-elevation").property("value", Math.floor(minElev));
