@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blair Ednie - Data Visualization Portfolio</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-regression@1.3.10/dist/d3-regression.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -130,6 +131,11 @@
             </div>
             <div id="spaghetti-plot"></div>
         </div>
+
+        <div class="viz-section">
+            <h3>Temperature vs. Elevation Relationship</h3>
+            <div id="scatter-plot"></div>
+        </div>
     </main>
 
     <script>
@@ -137,62 +143,69 @@
         const margin = { top: 20, right: 20, bottom: 50, left: 50 };
         const width = 700 - margin.left - margin.right;
         const height = 500 - margin.top - margin.bottom;
-
+    
         const tooltip = d3.select("body")
             .append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
-
-        // Create SVGs for both plots
+    
+        // Create SVGs for all plots
         const singleStationSvg = d3.select("#line-chart")
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
-
+    
         const spaghettiSvg = d3.select("#spaghetti-plot")
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
-
+    
+        const scatterSvg = d3.select("#scatter-plot")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+    
         // Create color scale for elevations
         const colorScale = d3.scaleSequential(d3.interpolateViridis)
             .domain([0, 2000]);
-
+    
         // Fetch data from GitHub URL
-        d3.csv("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(data => {
+        d3.csv("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(function(data) {
             // Parse numeric values
             data.forEach(d => {
                 d.Year = +d.Year;
                 d.Temp = +d.Temp;
                 d.elev = +d.elev;
             });
-
+    
             // Setup scales for single station plot
             const xScale = d3.scaleLinear()
                 .domain(d3.extent(data, d => d.Year))
                 .range([0, width]);
-
+    
             const yScale = d3.scaleLinear()
                 .domain([
                     d3.min(data, d => d.Temp) - 1,
                     d3.max(data, d => d.Temp) + 1
                 ])
                 .range([height, 0]);
-
+    
             // Add axes to single station plot
             singleStationSvg.append("g")
                 .attr("class", "x-axis")
                 .attr("transform", `translate(0,${height})`)
                 .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-
+    
             singleStationSvg.append("g")
                 .attr("class", "y-axis")
                 .call(d3.axisLeft(yScale));
-
+    
             // Add labels to single station plot
             singleStationSvg.append("text")
                 .attr("class", "x-label")
@@ -200,13 +213,99 @@
                 .attr("x", width / 2)
                 .attr("y", height + 40)
                 .text("Year");
-
+    
             singleStationSvg.append("text")
                 .attr("class", "y-label")
                 .attr("text-anchor", "middle")
                 .attr("transform", `translate(${-40},${height/2}) rotate(-90)`)
                 .text("Temperature (°C)");
-
+    
+            // Calculate station averages for scatter plot
+            const stationAverages = Array.from(d3.group(data, d => d.name), ([name, values]) => ({
+                name: name,
+                elev: values[0].elev,
+                avgTemp: d3.mean(values, d => d.Temp)
+            }));
+    
+            // Create scales for scatter plot
+            const xScaleScatter = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.elev)])
+                .range([0, width]);
+    
+            const yScaleScatter = d3.scaleLinear()
+                .domain([
+                    d3.min(stationAverages, d => d.avgTemp) - 1,
+                    d3.max(stationAverages, d => d.avgTemp) + 1
+                ])
+                .range([height, 0]);
+    
+            // Add axes to scatter plot
+            scatterSvg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScaleScatter))
+                .append("text")
+                .attr("x", width / 2)
+                .attr("y", 40)
+                .attr("fill", "black")
+                .text("Elevation (m)");
+    
+            scatterSvg.append("g")
+                .call(d3.axisLeft(yScaleScatter))
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -40)
+                .attr("x", -height / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "black")
+                .text("Average Temperature (°C)");
+    
+            // Add scatter points
+            scatterSvg.selectAll(".point")
+                .data(stationAverages)
+                .enter()
+                .append("circle")
+                .attr("class", "point")
+                .attr("cx", d => xScaleScatter(d.elev))
+                .attr("cy", d => yScaleScatter(d.avgTemp))
+                .attr("r", 5)
+                .attr("fill", "steelblue")
+                .attr("opacity", 0.7)
+                .on("mouseover", (event, d) => {
+                    tooltip.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    tooltip.html(`
+                        Station: ${d.name}<br/>
+                        Elevation: ${d.elev}m<br/>
+                        Avg Temperature: ${d.avgTemp.toFixed(2)}°C
+                    `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
+    
+            // Calculate regression line
+            const regressionGenerator = d3.regressionLinear()
+                .x(d => d.elev)
+                .y(d => d.avgTemp);
+    
+            const regressionLine = regressionGenerator(stationAverages);
+    
+            // Add trendline
+            scatterSvg.append("line")
+                .attr("class", "trendline")
+                .attr("x1", xScaleScatter(regressionLine[0][0]))
+                .attr("y1", yScaleScatter(regressionLine[0][1]))
+                .attr("x2", xScaleScatter(regressionLine[1][0]))
+                .attr("y2", yScaleScatter(regressionLine[1][1]))
+                .attr("stroke", "red")
+                .attr("stroke-dasharray", "4,4")
+                .attr("stroke-width", 2);
+    
             // Populate station dropdown
             const stations = [...new Set(data.map(d => d.name))];
             d3.select("#station-select")
@@ -215,19 +314,19 @@
                 .enter()
                 .append("option")
                 .text(d => d);
-
+    
             // Function to update single station plot
             function updateSingleStation(station) {
                 const stationData = data.filter(d => d.name === station);
-
+    
                 // Update line
                 const line = d3.line()
                     .x(d => xScale(d.Year))
                     .y(d => yScale(d.Temp));
-
+    
                 singleStationSvg.selectAll(".line").remove();
                 singleStationSvg.selectAll(".dot").remove();
-
+    
                 singleStationSvg.append("path")
                     .datum(stationData)
                     .attr("class", "line")
@@ -235,7 +334,7 @@
                     .attr("stroke", "steelblue")
                     .attr("stroke-width", 1.5)
                     .attr("d", line);
-
+    
                 // Add dots with tooltips
                 singleStationSvg.selectAll(".dot")
                     .data(stationData)
@@ -264,41 +363,34 @@
                             .style("opacity", 0);
                     });
             }
-
+    
             // Function to update spaghetti plot
             function updateSpaghettiPlot(minElev, maxElev) {
-                // Group data by station
                 const stations = d3.group(data, d => d.name);
                 
-                // Filter stations by elevation
                 const filteredStations = Array.from(stations).filter(([name, values]) => {
                     const elevation = values[0].elev;
                     return elevation >= minElev && elevation <= maxElev;
                 });
-
-                // Update color scale domain
+    
                 colorScale.domain([minElev, maxElev]);
-
-                // Create line generator
+    
                 const line = d3.line()
                     .x(d => xScale(d.Year))
                     .y(d => yScale(d.Temp));
-
-                // Remove existing lines
+    
                 spaghettiSvg.selectAll(".spaghetti-line").remove();
                 spaghettiSvg.selectAll(".axis").remove();
-
-                // Add axes
+    
                 spaghettiSvg.append("g")
                     .attr("class", "axis")
                     .attr("transform", `translate(0,${height})`)
                     .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-
+    
                 spaghettiSvg.append("g")
                     .attr("class", "axis")
                     .call(d3.axisLeft(yScale));
-
-                // Add lines for each station
+    
                 filteredStations.forEach(([name, values]) => {
                     spaghettiSvg.append("path")
                         .datum(values)
@@ -324,22 +416,22 @@
                         });
                 });
             }
-
+    
             // Initial plots
             updateSingleStation(stations[0]);
             updateSpaghettiPlot(0, 2000);
-
+    
             // Event listeners
             d3.select("#station-select").on("change", function() {
                 updateSingleStation(this.value);
             });
-
+    
             d3.select("#update-elevation").on("click", () => {
                 const minElev = +d3.select("#min-elevation").property("value");
                 const maxElev = +d3.select("#max-elevation").property("value");
                 updateSpaghettiPlot(minElev, maxElev);
             });
-
+    
         }).catch(function(error) {
             console.log(error);
             d3.selectAll(".viz-section")
