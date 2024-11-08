@@ -107,9 +107,158 @@
         
         <h2>Australian Average Max Temperature</h2>
         <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
-        <p><label for="station-select">Select a station:</label>
-        <select id="station-select"></select>
-        <div id="line-chart"></div></p>
+        
+        // Add this script at the end of your HTML body
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set the dimensions and margins of the graph
+            const margin = {top: 20, right: 30, bottom: 50, left: 60};
+            const width = 700 - margin.left - margin.right;
+            const height = 400 - margin.top - margin.bottom;
+        
+            // Create the SVG container
+            const svg = d3.select("#line-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+        
+            // Create tooltip div
+            const tooltip = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+        
+            // Load and process the data
+            d3.csv("australian_temp.csv").then(function(data) {
+                // Parse dates and temperatures
+                data.forEach(d => {
+                    d.date = d3.timeParse("%Y-%m-%d")(d.date);
+                    d.temperature = +d.temperature;
+                });
+        
+                // Get unique stations for dropdown
+                const stations = [...new Set(data.map(d => d.station))];
+                
+                // Populate dropdown
+                d3.select("#station-select")
+                    .selectAll("option")
+                    .data(stations)
+                    .enter()
+                    .append("option")
+                    .text(d => d)
+                    .attr("value", d => d);
+        
+                // Function to update the chart
+                function updateChart(selectedStation) {
+                    // Filter data for selected station
+                    const filteredData = data.filter(d => d.station === selectedStation);
+        
+                    // Set up scales
+                    const x = d3.scaleTime()
+                        .domain(d3.extent(filteredData, d => d.date))
+                        .range([0, width]);
+        
+                    const y = d3.scaleLinear()
+                        .domain([0, d3.max(filteredData, d => d.temperature)])
+                        .range([height, 0]);
+        
+                    // Remove existing axes
+                    svg.selectAll(".axis").remove();
+        
+                    // Add X axis
+                    svg.append("g")
+                        .attr("class", "axis")
+                        .attr("transform", `translate(0,${height})`)
+                        .call(d3.axisBottom(x))
+                        .append("text")
+                        .attr("fill", "black")
+                        .attr("x", width/2)
+                        .attr("y", 40)
+                        .text("Date");
+        
+                    // Add Y axis
+                    svg.append("g")
+                        .attr("class", "axis")
+                        .call(d3.axisLeft(y))
+                        .append("text")
+                        .attr("fill", "black")
+                        .attr("transform", "rotate(-90)")
+                        .attr("y", -40)
+                        .attr("x", -height/2)
+                        .attr("text-anchor", "middle")
+                        .text("Temperature (°C)");
+        
+                    // Create line generator
+                    const line = d3.line()
+                        .x(d => x(d.date))
+                        .y(d => y(d.temperature));
+        
+                    // Update the line
+                    const path = svg.selectAll(".line")
+                        .data([filteredData]);
+        
+                    // Enter + Update
+                    path.enter()
+                        .append("path")
+                        .attr("class", "line")
+                        .merge(path)
+                        .transition()
+                        .duration(1000)
+                        .attr("fill", "none")
+                        .attr("stroke", "#3498db")
+                        .attr("stroke-width", 2)
+                        .attr("d", line);
+        
+                    // Exit
+                    path.exit().remove();
+        
+                    // Add dots
+                    const dots = svg.selectAll(".dot")
+                        .data(filteredData);
+        
+                    // Enter + Update dots
+                    dots.enter()
+                        .append("circle")
+                        .attr("class", "dot")
+                        .merge(dots)
+                        .attr("cx", d => x(d.date))
+                        .attr("cy", d => y(d.temperature))
+                        .attr("r", 3)
+                        .attr("fill", "#3498db")
+                        .on("mouseover", function(event, d) {
+                            tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                            tooltip.html(`Date: ${d3.timeFormat("%Y-%m-%d")(d.date)}<br/>Temperature: ${d.temperature}°C`)
+                                .style("left", (event.pageX + 10) + "px")
+                                .style("top", (event.pageY - 28) + "px");
+                        })
+                        .on("mouseout", function(d) {
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+        
+                    // Exit dots
+                    dots.exit().remove();
+                }
+        
+                // Initial chart with first station
+                updateChart(stations[0]);
+        
+                // Update chart when dropdown selection changes
+                d3.select("#station-select").on("change", function() {
+                    updateChart(this.value);
+                });
+            }).catch(function(error) {
+                console.log(error);
+                svg.append("text")
+                    .attr("x", width/2)
+                    .attr("y", height/2)
+                    .attr("text-anchor", "middle")
+                    .text("Error loading data: Please ensure australian_temp.csv is in the correct location");
+            });
+        });
     </main>
 </body>
 </html>
