@@ -94,6 +94,20 @@
         .nav a:hover {
             background-color: #2980b9;
         }
+
+        .filter-section {
+          margin-top: 20px;
+        }
+        
+        .filter-section label {
+          margin-right: 10px;
+        }
+        
+        .filter-section input {
+          width: 80px;
+          margin-right: 20px;
+          padding: 5px;
+        }
     </style>
 </head>
 <body>
@@ -132,8 +146,17 @@
         </div>
 
         <div class="viz-section">
-            <h3>Temperature vs. Elevation Relationship</h3>
-            <div id="scatter-plot"></div>
+          <h3>Temperature vs. Elevation Relationship</h3>
+          <div id="scatter-plot"></div>
+          <div class="filter-section">
+            <h4>Filter by Temperature Range</h4>
+            <label for="min-temp">Min Temperature (°C):</label>
+            <input type="number" id="min-temp" step="0.1">
+            <label for="max-temp">Max Temperature (°C):</label>
+            <input type="number" id="max-temp" step="0.1">
+            <button id="filter-temp">Filter</button>
+            <button id="reset-filter">Reset Filter</button>
+          </div>
         </div>
     </main>
 
@@ -286,6 +309,38 @@
                         .duration(500)
                         .style("opacity", 0);
                 });
+
+            // Function to filter scatter plot by temperature range
+            function filterByTemperature() {
+              const minTemp = +d3.select("#min-temp").property("value");
+              const maxTemp = +d3.select("#max-temp").property("value");
+            
+              scatterSvg.selectAll(".point")
+                .attr("fill", d => {
+                  if (d.avgTemp >= minTemp && d.avgTemp <= maxTemp) {
+                    return "steelblue";
+                  } else {
+                    return "lightgray";
+                  }
+                })
+                .attr("opacity", d => {
+                  if (d.avgTemp >= minTemp && d.avgTemp <= maxTemp) {
+                    return 0.7;
+                  } else {
+                    return 0.3;
+                  }
+                });
+            }
+            
+            // Event listener for filter button
+            d3.select("#filter-temp").on("click", filterByTemperature);
+            
+            // Event listener for reset filter button
+            d3.select("#reset-filter").on("click", () => {
+              scatterSvg.selectAll(".point")
+                .attr("fill", "steelblue")
+                .attr("opacity", 0.7);
+            });
     
             // Populate station dropdown
             const stations = [...new Set(data.map(d => d.name))];
