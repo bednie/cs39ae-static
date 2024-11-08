@@ -54,22 +54,28 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .viz-item img {
-            width: 100%;
-            height: 600px;
-            object-fit: contain;
+        .elevation-filter {
+            margin: 20px 0;
+            padding: 10px;
             background-color: #f8f9fa;
-            border-radius: 4px;
-            margin-bottom: 15px;
+            border-radius: 8px;
         }
-        .viz-item h3 {
-            color: #2c3e50;
-            margin-top: 0;
-            font-size: 1.4em;
+        .elevation-filter label {
+            margin-right: 10px;
         }
-        .viz-item p {
-            color: #666;
-            margin-bottom: 0;
+        .elevation-filter input {
+            width: 80px;
+            margin-right: 20px;
+            padding: 5px;
+        }
+        .spaghetti-line {
+            fill: none;
+            stroke-width: 1;
+            opacity: 0.3;
+        }
+        .spaghetti-line:hover {
+            stroke-width: 2;
+            opacity: 1;
         }
         .nav {
             text-align: center;
@@ -101,14 +107,29 @@
     </header>
     <main>
         <p>Project 2: D3.js Interactive Web Page</p>
-      
         <p>These visualizations created with help from Anthropic's Claude 3.5 LLM.</p>
         
         <h2>Australian Average Max Temperature</h2>
         <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
-        <p><label for="station-select">Select a station:</label>
-        <select id="station-select"></select>
-        <div id="line-chart"></div></p>
+        
+        <div class="viz-section">
+            <h3>Single Station View</h3>
+            <p><label for="station-select">Select a station:</label>
+            <select id="station-select"></select></p>
+            <div id="line-chart"></div>
+        </div>
+
+        <div class="viz-section">
+            <h3>Temperature Comparison by Elevation</h3>
+            <div class="elevation-filter">
+                <label for="min-elevation">Min Elevation (m):</label>
+                <input type="number" id="min-elevation" value="0">
+                <label for="max-elevation">Max Elevation (m):</label>
+                <input type="number" id="max-elevation" value="2000">
+                <button id="update-elevation">Update Filter</button>
+            </div>
+            <div id="spaghetti-plot"></div>
+        </div>
     </main>
 
     <script>
@@ -122,88 +143,93 @@
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-        // Create SVG with margins
-        const svg = d3.select("#line-chart")
+        // Create SVGs for both plots
+        const singleStationSvg = d3.select("#line-chart")
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
+        const spaghettiSvg = d3.select("#spaghetti-plot")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Create color scale for elevations
+        const colorScale = d3.scaleSequential(d3.interpolateViridis)
+            .domain([0, 2000]);
+
         // Fetch data from GitHub URL
         d3.csv("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(data => {
-            // Parse year and temperature
+            // Parse numeric values
             data.forEach(d => {
                 d.Year = +d.Year;
                 d.Temp = +d.Temp;
+                d.elev = +d.elev;
             });
 
-            // Create scales
+            // Setup scales for single station plot
             const xScale = d3.scaleLinear()
                 .domain(d3.extent(data, d => d.Year))
                 .range([0, width]);
 
             const yScale = d3.scaleLinear()
-                .domain(d3.extent(data, d => d.Temp))
+                .domain([
+                    d3.min(data, d => d.Temp) - 1,
+                    d3.max(data, d => d.Temp) + 1
+                ])
                 .range([height, 0]);
 
-            // Create line generator
-            const line = d3.line()
-                .x(d => xScale(d.Year))
-                .y(d => yScale(d.Temp));
-
-            // Create axes
-            const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
-            const yAxis = d3.axisLeft(yScale);
-
-            svg.append("g")
+            // Add axes to single station plot
+            singleStationSvg.append("g")
+                .attr("class", "x-axis")
                 .attr("transform", `translate(0,${height})`)
-                .call(xAxis);
+                .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
 
-            svg.append("g")
-                .call(yAxis);
+            singleStationSvg.append("g")
+                .attr("class", "y-axis")
+                .call(d3.axisLeft(yScale));
 
-            // Add chart title
-            svg.append("text")
-                .attr("class", "chart-title")
-                .attr("text-anchor", "middle")
-                .attr("x", width / 2)
-                .attr("y", -margin.top / 2 + 10)
-                .text("Average Maximum Temperature in Australia");
-
-            // Add axis labels
-            svg.append("text")
+            // Add labels to single station plot
+            singleStationSvg.append("text")
                 .attr("class", "x-label")
                 .attr("text-anchor", "middle")
                 .attr("x", width / 2)
-                .attr("y", height + margin.bottom - 10)
+                .attr("y", height + 40)
                 .text("Year");
 
-            svg.append("text")
+            singleStationSvg.append("text")
                 .attr("class", "y-label")
                 .attr("text-anchor", "middle")
-                .attr("transform", `translate(${-margin.left + 20},${height / 2}) rotate(-90)`)
+                .attr("transform", `translate(${-40},${height/2}) rotate(-90)`)
                 .text("Temperature (°C)");
 
-            // Populate dropdown options
-            const stationSelect = d3.select("#station-select");
+            // Populate station dropdown
             const stations = [...new Set(data.map(d => d.name))];
-
-            stationSelect.selectAll("option")
+            d3.select("#station-select")
+                .selectAll("option")
                 .data(stations)
                 .enter()
                 .append("option")
                 .text(d => d);
 
-            // Function to update the line chart
-            function updateLineChart(station) {
-                const filteredData = data.filter(d => d.name === station);
+            // Function to update single station plot
+            function updateSingleStation(station) {
+                const stationData = data.filter(d => d.name === station);
 
-                svg.selectAll(".line").remove();
-                svg.selectAll(".dot").remove();
+                // Update line
+                const line = d3.line()
+                    .x(d => xScale(d.Year))
+                    .y(d => yScale(d.Temp));
 
-                svg.append("path")
-                    .datum(filteredData)
+                singleStationSvg.selectAll(".line").remove();
+                singleStationSvg.selectAll(".dot").remove();
+
+                singleStationSvg.append("path")
+                    .datum(stationData)
                     .attr("class", "line")
                     .attr("fill", "none")
                     .attr("stroke", "steelblue")
@@ -211,8 +237,8 @@
                     .attr("d", line);
 
                 // Add dots with tooltips
-                svg.selectAll(".dot")
-                    .data(filteredData)
+                singleStationSvg.selectAll(".dot")
+                    .data(stationData)
                     .enter()
                     .append("circle")
                     .attr("class", "dot")
@@ -226,7 +252,8 @@
                         tooltip.html(`
                             Year: ${d.Year}<br/>
                             Temperature: ${d.Temp.toFixed(2)}°C<br/>
-                            Station: ${d.name}
+                            Station: ${d.name}<br/>
+                            Elevation: ${d.elev}m
                         `)
                             .style("left", (event.pageX + 10) + "px")
                             .style("top", (event.pageY - 28) + "px");
@@ -238,19 +265,86 @@
                     });
             }
 
-            // Initial chart with first station
-            updateLineChart(stations[0]);
+            // Function to update spaghetti plot
+            function updateSpaghettiPlot(minElev, maxElev) {
+                // Group data by station
+                const stations = d3.group(data, d => d.name);
+                
+                // Filter stations by elevation
+                const filteredStations = Array.from(stations).filter(([name, values]) => {
+                    const elevation = values[0].elev;
+                    return elevation >= minElev && elevation <= maxElev;
+                });
 
-            // Update chart when dropdown selection changes
-            stationSelect.on("change", function() {
-                updateLineChart(this.value);
+                // Update color scale domain
+                colorScale.domain([minElev, maxElev]);
+
+                // Create line generator
+                const line = d3.line()
+                    .x(d => xScale(d.Year))
+                    .y(d => yScale(d.Temp));
+
+                // Remove existing lines
+                spaghettiSvg.selectAll(".spaghetti-line").remove();
+                spaghettiSvg.selectAll(".axis").remove();
+
+                // Add axes
+                spaghettiSvg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform", `translate(0,${height})`)
+                    .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
+
+                spaghettiSvg.append("g")
+                    .attr("class", "axis")
+                    .call(d3.axisLeft(yScale));
+
+                // Add lines for each station
+                filteredStations.forEach(([name, values]) => {
+                    spaghettiSvg.append("path")
+                        .datum(values)
+                        .attr("class", "spaghetti-line")
+                        .attr("d", line)
+                        .style("stroke", d => colorScale(d[0].elev))
+                        .on("mouseover", (event, d) => {
+                            tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                            tooltip.html(`
+                                Station: ${d[0].name}<br/>
+                                Elevation: ${d[0].elev}m<br/>
+                                Average Temp: ${d3.mean(d, d => d.Temp).toFixed(2)}°C
+                            `)
+                                .style("left", (event.pageX + 10) + "px")
+                                .style("top", (event.pageY - 28) + "px");
+                        })
+                        .on("mouseout", () => {
+                            tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                        });
+                });
+            }
+
+            // Initial plots
+            updateSingleStation(stations[0]);
+            updateSpaghettiPlot(0, 2000);
+
+            // Event listeners
+            d3.select("#station-select").on("change", function() {
+                updateSingleStation(this.value);
             });
+
+            d3.select("#update-elevation").on("click", () => {
+                const minElev = +d3.select("#min-elevation").property("value");
+                const maxElev = +d3.select("#max-elevation").property("value");
+                updateSpaghettiPlot(minElev, maxElev);
+            });
+
         }).catch(function(error) {
             console.log(error);
-            svg.append("text")
-                .attr("x", width/2)
-                .attr("y", height/2)
-                .attr("text-anchor", "middle")
+            d3.selectAll(".viz-section")
+                .append("p")
+                .attr("class", "error")
                 .text("Error loading data: " + error.message);
         });
     });
