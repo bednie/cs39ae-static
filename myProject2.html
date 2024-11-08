@@ -182,8 +182,7 @@
             .attr("transform", `translate(${margin.left},${margin.top})`);
     
         // Create color scale for elevations
-        const colorScale = d3.scaleSequential(d3.interpolateViridis)
-            .domain([0, 2000]);
+        const colorScale = d3.scaleSequential(d3.interpolateViridis);
     
         // Fetch data from GitHub URL
         d3.csv("https://raw.githubusercontent.com/bednie/cs39ae-static/refs/heads/main/AustralianAverageMaxTemp.csv").then(function(data) {
@@ -198,6 +197,9 @@
             const stations = d3.group(data, d => d.name);
             const minElev = d3.min(Array.from(stations), ([name, values]) => values[0].elev);
             const maxElev = d3.max(Array.from(stations), ([name, values]) => values[0].elev);
+
+            // Update colorScale domain
+            colorScale.domain([minElev, maxElev]);
             
             // Set initial input values
             d3.select("#min-elevation").property("value", Math.floor(minElev));
@@ -506,7 +508,7 @@
     
             // Initial plots
             updateSingleStation(stations[0]);
-            updateSpaghettiPlot(Math.floor(minElev), Math.ceil(maxElev));
+            updateSpaghettiPlot(minElev, maxElev);
     
             // Event listeners
             d3.select("#station-select").on("change", function() {
