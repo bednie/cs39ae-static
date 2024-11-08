@@ -132,7 +132,7 @@
             .style("opacity", 0);
 
         // Load and process the data
-        d3.csv("australian_temp.csv", function(d) {
+        d3.csv("AustralianAverageMaxTemp.csv", function(d) {
             return {
                 lat: +d.latlongelevnameYearTemp.split(',')[0],
                 lon: +d.latlongelevnameYearTemp.split(',')[1],
