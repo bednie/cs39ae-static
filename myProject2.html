@@ -267,7 +267,12 @@
                 .attr("text-anchor", "middle")
                 .attr("fill", "black")
                 .text("Average Temperature (°C)");
-    
+
+            // Create trendline
+            const regressionLine = d3.regressionLinear()
+              .x(d => d.elev)
+              .y(d => d.avgTemp);
+                
             // Add scatter points
             scatterSvg.selectAll(".point")
                 .data(stationAverages)
@@ -297,6 +302,18 @@
                         .style("opacity", 0);
                 });
 
+            // Add the trendline
+            const trendData = regressionLine(stationAverages);
+            scatterSvg.append("line")
+              .attr("class", "trendline")
+              .attr("x1", xScaleScatter(trendData[0][0]))
+              .attr("y1", yScaleScatter(trendData[0][1]))
+              .attr("x2", xScaleScatter(trendData[1][0]))
+              .attr("y2", yScaleScatter(trendData[1][1]))
+              .attr("stroke", "red")
+              .attr("stroke-width", 2)
+              .attr("stroke-dasharray", "4,4");
+
             // Function to filter scatter plot by temperature range
             function filterByTemperature() {
               const minTemp = +d3.select("#min-temp").property("value");
@@ -317,6 +334,10 @@
                     return 0.3;
                   }
                 });
+            
+              // Update trendline visibility
+              scatterSvg.select(".trendline")
+                .style("opacity", minTemp || maxTemp ? 0.3 : 1);
             }
             
             // Event listener for filter button
@@ -327,6 +348,9 @@
               scatterSvg.selectAll(".point")
                 .attr("fill", "steelblue")
                 .attr("opacity", 0.7);
+
+              scatterSvg.select(".trendline")
+                .style("opacity", 1);
             });
     
             // Populate station dropdown
