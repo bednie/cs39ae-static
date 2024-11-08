@@ -194,9 +194,9 @@
             });
 
             // Calculate elevation range for all stations once
-            const stations = d3.group(data, d => d.name);
-            const minElev = d3.min(Array.from(stations), ([name, values]) => values[0].elev);
-            const maxElev = d3.max(Array.from(stations), ([name, values]) => values[0].elev);
+            const allStations = d3.group(data, d => d.name);
+            const minElev = d3.min(Array.from(allStations), ([name, values]) => values[0].elev);
+            const maxElev = d3.max(Array.from(allStations), ([name, values]) => values[0].elev);
 
             // Update colorScale domain
             colorScale.domain([minElev, maxElev]);
