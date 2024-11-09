@@ -110,17 +110,13 @@
         <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
         <p>These visualizations created with help from Anthropic's Claude 3.5 LLM.</p>
 
-        // Visualizations:
-
-        // 1. Single station temperature trend over the years covered in the dataset.
         <div class="viz-section">
             <h3>Single Station View</h3>
             <p><label for="station-select">Select a station:</label>
             <select id="station-select"></select></p>
             <div id="line-chart"></div>
         </div>
-
-        // 2. Spaghetti plot of all stations temperature's by year with filtering by elevation range
+        
         <div class="viz-section">
             <h3>Temperature Comparison by Elevation</h3>
             <div class="elevation-filter">
@@ -135,7 +131,6 @@
             <div id="spaghetti-plot"></div>
         </div>
 
-        // 3. Scatter Plot of mean of Avg. Max Daily Temps for all years with filtering by temperature range
         <div class="viz-section">
           <h3>Temperature vs. Elevation Relationship</h3>
           <div class="elevation-filter">
