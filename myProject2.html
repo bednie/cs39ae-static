@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blair Ednie - Data Visualization Portfolio</title>
+    <title>Blair Ednie - Project 2: D3.js Interactive Web Page</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
@@ -102,16 +102,17 @@
     </nav>
 
     <header>
-        <h1>Blair Ednie</h1>
-        <div class="subtitle">Project 2: D3.js Interactive Web Page</div>
+        <h1>Project 2: D3.js Interactive Web Page</h1>
+        <div class="subtitle">by Blair Ednie for CS-39AE</div>
     </header>
     <main>
-        <p>Project 2: D3.js Interactive Web Page</p>
-        <p>These visualizations created with help from Anthropic's Claude 3.5 LLM.</p>
-        
-        <h2>Australian Average Max Temperature</h2>
+        <h2>Australian Average Max Temperature Visualizations Using D3.js</h2>
         <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
-        
+        <p>These visualizations created with help from Anthropic's Claude 3.5 LLM.</p>
+
+        // Visualizations:
+
+        // 1. Single station temperature trend over the years covered in the dataset.
         <div class="viz-section">
             <h3>Single Station View</h3>
             <p><label for="station-select">Select a station:</label>
@@ -119,6 +120,7 @@
             <div id="line-chart"></div>
         </div>
 
+        // 2. Spaghetti plot of all stations temperature's by year with filtering by elevation range
         <div class="viz-section">
             <h3>Temperature Comparison by Elevation</h3>
             <div class="elevation-filter">
@@ -133,6 +135,7 @@
             <div id="spaghetti-plot"></div>
         </div>
 
+        // 3. Scatter Plot of mean of Avg. Max Daily Temps for all years with filtering by temperature range
         <div class="viz-section">
           <h3>Temperature vs. Elevation Relationship</h3>
           <div class="elevation-filter">
@@ -198,7 +201,7 @@
             const minElev = d3.min(Array.from(allStations), ([name, values]) => values[0].elev);
             const maxElev = d3.max(Array.from(allStations), ([name, values]) => values[0].elev);
 
-            // Update colorScale domain
+            // Update colorScale domain to use min and max elevations
             colorScale.domain([minElev, maxElev]);
             
             // Set initial input values
@@ -286,6 +289,7 @@
                 .text("Average Temperature (°C)");
             
             // Create trendline
+            // I used Claude to help with this so that I didn't have to import another script
             const xMean = d3.mean(stationAverages, d => d.elev);
             const yMean = d3.mean(stationAverages, d => d.avgTemp);
             const ssxy = d3.sum(stationAverages, d => (d.elev - xMean) * (d.avgTemp - yMean));
@@ -387,7 +391,7 @@
             const stations = [...new Set(data.map(d => d.name))];
             d3.select("#station-select")
                 .selectAll("option")
-                .data(stations.sort())
+                .data(stations.sort()) // Make sure the stations are sorted alphabetically
                 .enter()
                 .append("option")
                 .text(d => d);
