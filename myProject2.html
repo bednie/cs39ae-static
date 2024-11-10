@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blair Ednie - Project 2: D3.js Interactive Web Page</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -79,14 +81,6 @@
             background-color: #f8f9fa;
             border-radius: 8px;
         }
-        .elevation-filter label {
-            margin-right: 10px;
-        }
-        .elevation-filter input {
-            width: 80px;
-            margin-right: 20px;
-            padding: 5px;
-        }
         .spaghetti-line {
             fill: none;
             stroke-width: 1;
@@ -112,6 +106,18 @@
         }
         .nav a:hover {
             background-color: #2980b9;
+        }
+        .range-slider {
+            margin: 30px 10px;
+            padding: 0 10px;
+        }
+        .noUi-connect {
+            background: #3498db;
+        }
+        .slider-values {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
         }
     </style>
 </head>
@@ -152,11 +158,10 @@
             </p>
             <div class="elevation-filter">
                 <h5>Filter by Elevation Range</h5>
-                <label for="min-elevation">Min Elevation (m):</label>
-                <input type="number" id="min-elevation" value="0">
-                <label for="max-elevation">Max Elevation (m):</label>
-                <input type="number" id="max-elevation" value="2000">
-                <button id="update-elevation">Filter</button>
+                <div id="elevation-range" class="range-slider"></div>
+                <div class="slider-values">
+                    <span id="elevation-min"></span>m - <span id="elevation-max"></span>m
+                </div>
                 <button id="reset-elevation">Reset</button>
             </div>
             <div id="spaghetti-plot"></div>
@@ -165,19 +170,18 @@
         <hr class="viz-separator">
 
         <div class="viz-section">
-          <h3>Temperature vs. Elevation Relationship</h3>
-          <p class="viz-description">
-               This scatter plot shows the relationship between elevation and mean daily maximum temperature (averaged across all years) for each station. Each point represents a station, with a trend line showing the general cooling effect of increased elevation. Use the temperature range filter to highlight stations within specific temperature bands.
-          </p>
-          <div class="elevation-filter">
-            <h5>Filter by Temperature Range</h5>
-            <label for="min-temp">Min Temp (°C):</label>
-            <input type="number" id="min-temp" step="0.1">
-            <label for="max-temp">Max Temp (°C):</label>
-            <input type="number" id="max-temp" step="0.1">
-            <button id="filter-temp">Filter</button>
-            <button id="reset-temp">Reset</button>
-          </div>
+            <h3>Temperature vs. Elevation Relationship</h3>
+            <p class="viz-description">
+                This scatter plot shows the relationship between elevation and mean daily maximum temperature (averaged across all years) for each station. Each point represents a station, with a trend line showing the general cooling effect of increased elevation. Use the temperature range filter to highlight stations within specific temperature bands.
+            </p>
+            <div class="elevation-filter">
+                <h5>Filter by Temperature Range</h5>
+                <div id="temperature-range" class="range-slider"></div>
+                <div class="slider-values">
+                    <span id="temp-min"></span>°C - <span id="temp-max"></span>°C
+                </div>
+                <button id="reset-temp">Reset</button>
+            </div>
             <div id="scatter-plot"></div>
         </div>
     </main>
@@ -235,9 +239,17 @@
             // Update colorScale domain to use min and max elevations
             colorScale.domain([minElev, maxElev]);
             
-            // Set initial input values
-            d3.select("#min-elevation").property("value", Math.floor(minElev));
-            d3.select("#max-elevation").property("value", Math.ceil(maxElev));
+            // Initialize elevation slider
+            const elevationSlider = document.getElementById('elevation-range');
+            noUiSlider.create(elevationSlider, {
+                start: [Math.floor(minElev), Math.ceil(maxElev)],
+                connect: true,
+                range: {
+                    'min': Math.floor(minElev),
+                    'max': Math.ceil(maxElev)
+                },
+                step: 1
+            });
     
             // Setup scales for single station plot
             const xScale = d3.scaleLinear()
@@ -286,9 +298,17 @@
             const minTemp = d3.min(stationAverages, d => d.avgTemp);
             const maxTemp = d3.max(stationAverages, d => d.avgTemp);
             
-            // Set input values
-            d3.select("#min-temp").property("value", minTemp.toFixed(1));
-            d3.select("#max-temp").property("value", maxTemp.toFixed(1));
+            // Initialize temperature slider
+            const temperatureSlider = document.getElementById('temperature-range');
+            noUiSlider.create(temperatureSlider, {
+                start: [minTemp, maxTemp],
+                connect: true,
+                range: {
+                    'min': Math.floor(minTemp),
+                    'max': Math.ceil(maxTemp)
+                },
+                step: 0.1
+            });
             
             // Create scales for scatter plot
             const xScaleScatter = d3.scaleLinear()
@@ -322,7 +342,6 @@
                 .text("Average Temperature (°C)");
             
             // Create trendline
-            // I used Claude to help with this so that I didn't have to import another script
             const xMean = d3.mean(stationAverages, d => d.elev);
             const yMean = d3.mean(stationAverages, d => d.avgTemp);
             const ssxy = d3.sum(stationAverages, d => (d.elev - xMean) * (d.avgTemp - yMean));
@@ -376,55 +395,54 @@
                 .attr("stroke-dasharray", "4,4");
 
             // Function to filter scatter plot by temperature range
-            function filterByTemperature() {
-              const minTemp = +d3.select("#min-temp").property("value");
-              const maxTemp = +d3.select("#max-temp").property("value");
+            function filterByTemperature(minTemp, maxTemp) {
+                scatterSvg.selectAll(".point")
+                    .attr("fill", d => {
+                        if (d.avgTemp >= minTemp && d.avgTemp <= maxTemp) {
+                            return "steelblue";
+                        } else {
+                            return "lightgray";
+                        }
+                    })
+                    .attr("opacity", d => {
+                        if (d.avgTemp >= minTemp && d.avgTemp <= maxTemp) {
+                            return 0.7;
+                        } else {
+                            return 0.3;
+                        }
+                    });
             
-              scatterSvg.selectAll(".point")
-                .attr("fill", d => {
-                  if (d.avgTemp >= minTemp && d.avgTemp <= maxTemp) {
-                    return "steelblue";
-                  } else {
-                    return "lightgray";
-                  }
-                })
-                .attr("opacity", d => {
-                  if (d.avgTemp >= minTemp && d.avgTemp <= maxTemp) {
-                    return 0.7;
-                  } else {
-                    return 0.3;
-                  }
-                });
-            
-              // Update trendline visibility
-              scatterSvg.select(".trendline")
-                .style("opacity", minTemp || maxTemp ? 0.3 : 1);
+                // Update trendline visibility
+                scatterSvg.select(".trendline")
+                    .style("opacity", minTemp !== minTemp || maxTemp !== maxTemp ? 0.3 : 1);
             }
             
-            // Event listener for filter button
-            d3.select("#filter-temp").on("click", filterByTemperature);
-            
-            // Event listener for scatter plot reset button
-            d3.select("#reset-temp").on("click", () => {
-                // Reset input values to min/max
-                d3.select("#min-temp").property("value", minTemp.toFixed(1));
-                d3.select("#max-temp").property("value", maxTemp.toFixed(1));
-                
-                // Reset the points
-                scatterSvg.selectAll(".point")
-                    .attr("fill", "steelblue")
-                    .attr("opacity", 0.7);
-            
-                // Reset trendline
-                scatterSvg.select(".trendline")
-                    .style("opacity", 1);
+            // Update value displays and plots when sliders change
+            elevationSlider.noUiSlider.on('update', function(values) {
+                document.getElementById('elevation-min').textContent = Math.round(values[0]);
+                document.getElementById('elevation-max').textContent = Math.round(values[1]);
             });
-    
+
+            elevationSlider.noUiSlider.on('change', function(values) {
+                updateSpaghettiPlot(+values[0], +values[1]);
+            });
+
+            temperatureSlider.noUiSlider.on('update', function(values) {
+                document.getElementById('temp-min').textContent = (+values[0]).toFixed(1);
+                document.getElementById('temp-max').textContent = (+values[1]).toFixed(1);
+            });
+
+            temperatureSlider.noUiSlider.on('change', function(values) {
+                const minTemp = +values[0];
+                const maxTemp = +values[1];
+                filterByTemperature(minTemp, maxTemp);
+            });
+            
             // Populate station dropdown
             const stations = [...new Set(data.map(d => d.name))];
             d3.select("#station-select")
                 .selectAll("option")
-                .data(stations.sort()) // Make sure the stations are sorted alphabetically
+                .data(stations.sort())
                 .enter()
                 .append("option")
                 .text(d => d);
@@ -552,50 +570,15 @@
                 updateSingleStation(this.value);
             });
     
-            d3.select("#update-elevation").on("click", () => {
-                const minElev = +d3.select("#min-elevation").property("value");
-                const maxElev = +d3.select("#max-elevation").property("value");
-                updateSpaghettiPlot(minElev, maxElev);
-            });
-
-            // Event listener for spaghetti plot reset button
+            // Event listener for reset buttons
             d3.select("#reset-elevation").on("click", () => {
-                // Reset input values to min/max elevation across all stations
-                d3.select("#min-elevation").property("value", Math.floor(minElev));
-                d3.select("#max-elevation").property("value", Math.ceil(maxElev));
-                
-                // Reset the plot to show lines for all stations
+                elevationSlider.noUiSlider.set([Math.floor(minElev), Math.ceil(maxElev)]);
                 updateSpaghettiPlot(Math.floor(minElev), Math.ceil(maxElev));
             });
-                        
-            // Add Enter key listener to temperature filter inputs
-            d3.select("#min-temp").on("keypress", function(event) {
-                if (event.keyCode === 13 || event.key === "Enter") {
-                    filterByTemperature();
-                }
-            });
-            
-            d3.select("#max-temp").on("keypress", function(event) {
-                if (event.keyCode === 13 || event.key === "Enter") {
-                    filterByTemperature();
-                }
-            });
-            
-            // Add Enter key listener to elevation filter inputs
-            d3.select("#min-elevation").on("keypress", function(event) {
-                if (event.keyCode === 13 || event.key === "Enter") {
-                    const minElev = +d3.select("#min-elevation").property("value");
-                    const maxElev = +d3.select("#max-elevation").property("value");
-                    updateSpaghettiPlot(minElev, maxElev);
-                }
-            });
-            
-            d3.select("#max-elevation").on("keypress", function(event) {
-                if (event.keyCode === 13 || event.key === "Enter") {
-                    const minElev = +d3.select("#min-elevation").property("value");
-                    const maxElev = +d3.select("#max-elevation").property("value");
-                    updateSpaghettiPlot(minElev, maxElev);
-                }
+
+            d3.select("#reset-temp").on("click", () => {
+                temperatureSlider.noUiSlider.set([minTemp, maxTemp]);
+                filterByTemperature(minTemp, maxTemp);
             });
     
         }).catch(function(error) {
