@@ -250,6 +250,11 @@
                 },
                 step: 1
             });
+
+            // Set intial values for elevationSlider
+            elevationSlider.noUiSlider.set([Math.floor(minElev), Math.ceil(maxElev)]);
+            document.getElementById('elevation-min').textContent = Math.floor(minElev);
+            document.getElementById('elevation-max').textContent = Math.ceil(maxElev);
     
             // Setup scales for single station plot
             const xScale = d3.scaleLinear()
@@ -309,6 +314,11 @@
                 },
                 step: 0.1
             });
+
+            // Set intial values for temperatureSlider
+            temperatureSlider.noUiSlider.set([minTemp, maxTemp]);
+            document.getElementById('temp-min').textContent = minTemp.toFixed(1);
+            document.getElementById('temp-max').textContent = maxTemp.toFixed(1);
             
             // Create scales for scatter plot
             const xScaleScatter = d3.scaleLinear()
