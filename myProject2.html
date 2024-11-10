@@ -418,24 +418,16 @@
             }
             
             // Update value displays and plots when sliders change
-            elevationSlider.noUiSlider.on('update', function(values) {
+            elevationSlider.noUiSlider.on('slide', function(values) {
                 document.getElementById('elevation-min').textContent = Math.round(values[0]);
                 document.getElementById('elevation-max').textContent = Math.round(values[1]);
-            });
-
-            elevationSlider.noUiSlider.on('change', function(values) {
                 updateSpaghettiPlot(+values[0], +values[1]);
             });
-
-            temperatureSlider.noUiSlider.on('update', function(values) {
+            
+            temperatureSlider.noUiSlider.on('slide', function(values) {
                 document.getElementById('temp-min').textContent = (+values[0]).toFixed(1);
                 document.getElementById('temp-max').textContent = (+values[1]).toFixed(1);
-            });
-
-            temperatureSlider.noUiSlider.on('change', function(values) {
-                const minTemp = +values[0];
-                const maxTemp = +values[1];
-                filterByTemperature(minTemp, maxTemp);
+                filterByTemperature(+values[0], +values[1]);
             });
             
             // Populate station dropdown
