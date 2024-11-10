@@ -67,6 +67,12 @@
             max-width: 90%;
             line-height: 1.5;
         }
+        .viz-separator {
+            margin: 40px 0;
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+        }
         .elevation-filter {
             margin: 20px 0;
             padding: 10px;
@@ -123,10 +129,12 @@
         <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
         <p>These visualizations created with help from Anthropic's Claude 3.5 LLM.</p>
 
+        <hr class="viz-separator">
+
         <div class="viz-section">
             <h3>Single Station View</h3>
             <p class="viz-description">
-                This line chart shows the temperature trend over time for individual weather stations. Select different stations from the dropdown to compare how maximum temperatures have changed across years at specific locations.
+                This line chart shows the temperature trend over time for individual weather stations. Select different stations from the dropdown to compare how maximum temperatures have changed across years at specific stations.
             </p>
             <div class="elevation-filter">
                 <p><label for="station-select">Select a station:</label>
@@ -134,6 +142,8 @@
             </div>
             <div id="line-chart"></div>
         </div>
+        
+        <hr class="viz-separator">
         
         <div class="viz-section">
             <h3>Temperature Comparison by Elevation</h3>
@@ -152,10 +162,12 @@
             <div id="spaghetti-plot"></div>
         </div>
 
+        <hr class="viz-separator">
+
         <div class="viz-section">
           <h3>Temperature vs. Elevation Relationship</h3>
           <p class="viz-description">
-              This scatter plot reveals the relationship between elevation and average maximum temperature across all stations. Each point represents a station, with a trend line showing the general cooling effect of increased elevation. Use the temperature range filter to highlight stations within specific temperature bands.
+               This scatter plot shows the relationship between elevation and mean daily maximum temperature (averaged across all years) for each station. Each point represents a station, with a trend line showing the general cooling effect of increased elevation. Use the temperature range filter to highlight stations within specific temperature bands.
           </p>
           <div class="elevation-filter">
             <h5>Filter by Temperature Range</h5>
