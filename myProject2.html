@@ -60,6 +60,13 @@
             align-items: left;
             margin: 40px 0;
         }
+        .viz-description {
+            color: #666;
+            font-size: 0.95em;
+            margin: 10px 0 20px 0;
+            max-width: 90%;
+            line-height: 1.5;
+        }
         .elevation-filter {
             margin: 20px 0;
             padding: 10px;
@@ -118,6 +125,9 @@
 
         <div class="viz-section">
             <h3>Single Station View</h3>
+            <p class="viz-description">
+                This line chart shows the temperature trend over time for individual weather stations. Select different stations from the dropdown to compare how maximum temperatures have changed across years at specific locations.
+            </p>
             <div class="elevation-filter">
                 <p><label for="station-select">Select a station:</label>
                 <select id="station-select"></select></p>
@@ -127,6 +137,9 @@
         
         <div class="viz-section">
             <h3>Temperature Comparison by Elevation</h3>
+            <p class="viz-description">
+                This "spaghetti plot" displays temperature trends for multiple stations simultaneously, with colors indicating station elevation. Hover over lines to see station details. Use the elevation filter to focus on stations within specific elevation ranges and observe how altitude affects temperature patterns.
+            </p>
             <div class="elevation-filter">
                 <h5>Filter by Elevation Range</h5>
                 <label for="min-elevation">Min Elevation (m):</label>
@@ -141,6 +154,9 @@
 
         <div class="viz-section">
           <h3>Temperature vs. Elevation Relationship</h3>
+          <p class="viz-description">
+              This scatter plot reveals the relationship between elevation and average maximum temperature across all stations. Each point represents a station, with a trend line showing the general cooling effect of increased elevation. Use the temperature range filter to highlight stations within specific temperature bands.
+          </p>
           <div class="elevation-filter">
             <h5>Filter by Temperature Range</h5>
             <label for="min-temp">Min Temp (°C):</label>
