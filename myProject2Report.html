@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blair Ednie - Data Visualization Portfolio</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        main {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        p {
+            color: #34495e;
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .viz-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .viz-item img {
+            width: 100%;
+            height: 600px;
+            object-fit: contain;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .viz-item h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.4em;
+        }
+        .viz-item p {
+            color: #666;
+            margin-bottom: 0;
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            margin: 0 10px;
+        }
+        .nav a:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body>
+      <header>
+      <h1>Project 2 Report</h1>
+      <div class="subtitle">Blair Ednie, CS-39AE</div>
+  </header>
+  <main>
+      <h2>Project 2 Report: D3.js Interactive Web Page</h2>
+      
+      <h3>"What type of visualization did you select and why?"</h3>
+      <div class="viz-item">
+          <p>Single Station Line Plot (from lab):</p>
+          <ul>
+              <li>Shows detailed temperature trends over time for individual stations</li>
+              <li>Allows users to focus on specific locations through a dropdown selector</li>
+              <li>Gives context for the broader patterns shown in other views</li>
+          </ul>
+          
+          <p>Temperature vs. Elevation Scatter Plot:</p>
+          <ul>
+              <li>Visualizes the correlation between elevation and average maximum temperature</li>
+              <li>Includes a regression line to highlight the overall trend</li>
+              <li>Features interactive temperature-based filtering to help identify stations in specific temperature ranges</li>
+              <li>Makes it easy to spot outliers and clusters of stations with similar characteristics</li>
+          </ul>
+          
+          <p>Multi-station "Spaghetti" Plot:</p>
+          <ul>
+              <li>Shows all stations' temperature trends simultaneously</li>
+              <li>Uses a viridis color scale to encode elevation information</li>
+              <li>Implements elevation-based filtering to analyze temperature patterns within specific altitude ranges</li>
+          </ul>
+          
+          <p>I chose these two visualizations because one of the outstanding questions I had about this dataset, having worked with it in a previous homework assignment for this class, is the relationship between Avg. Daily Max Temp and the elevation. From the scatter plot, we can see that there is some correlation between elevation and lower temperatures, but not a very strong one.</p>
+          
+          <p>For the Spaghetti Plot, I chose this "messy" visualization partly to see how D3.js can handle lots of plots at once on the same chart. Just like with the Python plotting packages, we can apply a colormap and create tooltips to help communicate facts about the data. Another reason I chose this visualization is that I thought it would be perfect for the elevation range filtering I had in mind.</p>
+      </div>
+      
+      <h3>"A summary of the D3.js features you implemented."</h3>
+      <div class="viz-item">
+          <p>Data Handling:</p>
+          <ul>
+              <li>CSV: Used d3.csv() to load external data from a GitHub repository</li>
+              <li>Data Parsing: Automatic conversion of numeric values using the + operator</li>
+              <li>Grouping: d3.group() to organize data by station names</li>
+              <li>Aggregation: d3.mean() for calculating average temperatures</li>
+          </ul>
+          
+          <p>Scales and Color:</p>
+          <ul>
+              <li>scaleLinear: For mapping years, temperatures, and elevations to pixel coordinates</li>
+              <li>scaleSequential: Combined with interpolateViridis for elevation-based color mapping</li>
+              <li>Domains: Dynamic domain calculation using d3.extent(), d3.min(), and d3.max()</li>
+          </ul>
+          
+          <p>SVG Elements and Visualization:</p>
+          <ul>
+              <li>SVG Container: Created three separate SVG containers with margins</li>
+              <li>Basic Elements: paths, circles, and lines for various plot elements</li>
+              <li>Line Generator: d3.line() for creating temperature trend lines</li>
+              <li>Axes: d3.axisBottom() and d3.axisLeft() with custom formatting</li>
+              <li>Labels: Text elements for axis labels and titles</li>
+              <li>Trendline: Custom-calculated regression line using statistics</li>
+              <li>Interactive Elements: Dots with hover effects and tooltips</li>
+              <li>Transitions: Used for smooth tooltip appearances/disappearances</li>
+          </ul>
+          
+          <p>Interactivity:</p>
+          <ul>
+              <li>Event Handlers: "mouseover", "mouseout", "change", and "click" events</li>
+              <li>Tooltips: Custom div-based tooltips with dynamic positioning</li>
+              <li>Filtering: Interactive filtering based on elevation and temperature ranges</li>
+              <li>Selection Updates: Dynamic updating of visual elements based on user input</li>
+              <li>Forms: Dropdown menus and number inputs with event listeners</li>
+          </ul>
+      </div>
+      
+      <h3>"Any challenges you encountered and how you overcame them."</h3>
+      <div class="viz-item">
+          <p>Since I used AI tools (Claude 3.5 LLM) for this project, many of the challenges came from wrangling Claude rather than the code itself.</p>
+          
+          <p>Context window problems: Claude would forget what we were doing, or generate the same code twice. We ran into problems especially when getting default values for the filter ranges, since this touches several parts of the code: colormap, buttons, CSS, functions, and requires getting the min and max from the data. In the end I had to break this down into small pieces and iterate (responsible for many of the 90+ deployments of the site)</p>
+          
+          <p>Scatter plot trend line: Claude had fatal problems with managing D3 and something called "D3-regression," which I didn't end up using. D3-regression was conflicting with D3 causing the visualizations to error and display nothing. In the end I worked with Claude to calculate the trendline manually, avoiding the import.</p>
+          
+          <p>Consistent formatting & style: Making sure across the three visualizations that the font sizes, labels, tooltips, colors, axes, and so on, are consistent was a challenge. This required reworking parts of the code to reuse CSS and to use consistent D3 methods and attributes.</p>
+          
+          <p>UI/UX challenges - Text entry vs. Dual range slider: In earlier iterations I used text entry boxes for the range endpoints, but this felt clunky. I thought dual range sliders would be a better user experience. Although it isn't D3.js per se, I found https://refreshless.com/nouislider/, a package which allowed me to implement dual range sliders with ease. Then I was able to make this work with the D3.js features that were previously using text entry boxes.</p>
+      </div>
+      
+      <h2>Australian Average Max Temperature</h2>
+      <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
+      <p><label for="station-select">Select a station:</label>
+      <select id="station-select"></select>
+      <div id="line-chart"></div></p>
+  </main>
+</body>
+</html>
