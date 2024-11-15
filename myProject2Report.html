@@ -92,13 +92,16 @@
 </head>
 
 <body>
-      <header>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+    </nav>
+    
+    <header>
       <h1>Project 2 Report</h1>
       <div class="subtitle">Blair Ednie, CS-39AE</div>
-  </header>
-  <main>
-      <h2>Project 2 Report: D3.js Interactive Web Page</h2>
-      
+    </header>
+    <main>
+    <h2>Project 2 Report: D3.js Interactive Web Page</h2>
       <h3>"What type of visualization did you select and why?"</h3>
       <div class="viz-item">
           <p>Single Station Line Plot (from lab):</p>
@@ -179,12 +182,6 @@
           
           <p>UI/UX challenges - Text entry vs. Dual range slider: In earlier iterations I used text entry boxes for the range endpoints, but this felt clunky. I thought dual range sliders would be a better user experience. Although it isn't D3.js per se, I found https://refreshless.com/nouislider/, a package which allowed me to implement dual range sliders with ease. Then I was able to make this work with the D3.js features that were previously using text entry boxes.</p>
       </div>
-      
-      <h2>Australian Average Max Temperature</h2>
-      <p>Dataset: <a href="https://www.kaggle.com/datasets/joshmills/australian-average-daily-maximum-tempreature/data">Josh Mills's "Australian Average Daily Maximum Temperature"</a></p>
-      <p><label for="station-select">Select a station:</label>
-      <select id="station-select"></select>
-      <div id="line-chart"></div></p>
   </main>
 </body>
 </html>
