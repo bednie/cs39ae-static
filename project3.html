@@ -1,1 +1,98 @@
-placeholder
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 5.2</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+        main {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        p {
+            color: #34495e;
+        }
+        img {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        .viz-section {
+            margin: 40px 0;
+        }
+        .viz-description {
+            color: #666;
+            font-size: 0.95em;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Project 3: High-Impact Customer Segment Analysis</h1>
+        <div class="subtitle">Blair Ednie, CS-39AE</div>
+      <p>Dataset: <a href="https://www.kaggle.com/datasets/swathiunnikrishnan/amazon-consumer-behaviour-dataset">"Amazon consumer Behaviour Dataset
+" by Swathi Menon</a></p>
+    </header>
+    <main>
+        <div class="viz-section">
+            <h3>High-Impact Customer Segments by Purchase Frequency</h3>
+            <img src="viz_1.png" alt="High-Impact Segments by Purchase Frequency">  
+            <p class="viz-description">
+                This stacked bar chart identifies high-impact customer segments for Amazon based on purchase frequency. The 20-29 age group has the highest percentage of shoppers making purchases multiple times per week, representing a key frequent buying segment to focus on for improving satisfaction and consistency.
+            </p>
+        </div>
+        
+        <div class="viz-section">
+            <h3>Shopping Satisfaction by Age Group</h3>
+            <img src="viz_2.png" alt="Shopping Satisfaction by Age">
+            <p class="viz-description">  
+                This line graph plots shopping satisfaction by age, showing a downward satisfaction gap that rebounds after age 60. The 20-29 group has the lowest satisfaction, warranting investigation. The dip around 35-39 aligns with this group being frequent browsers but inconsistent purchasers. Focusing on 20-29 year olds could help close their satisfaction gap.
+            </p>
+        </div>
+
+        <div class="viz-section"> 
+            <h3>Purchase Frequency vs Cart Completion Patterns</h3>
+            <img src="viz_3.png" alt="Purchase Frequency vs Cart Completion">
+            <p class="viz-description">
+                This heat map shows purchase frequency vs cart completion patterns by age group. Shoppers in their 20s show some of the lowest satisfaction levels, with most completed purchases being inconsistent with frequent browsing. Ages 35-39 are frequent visitors but inconsistent purchasers. There is opportunity to better target 20-29 year olds as frequent but inconsistent shoppers.
+            </p>
+        </div>
+
+        <div class="viz-section">
+            <h3>Cart Abandonment Factors (Ages 20-29)</h3>
+            <img src="viz_4.png" alt="Cart Abandonment Factors">
+            <p class="viz-description">
+                This bubble chart segments abandonment factors for consumers aged 20-29 shopping for clothing and fashion. The most common reasons for cart abandonment in this demographic are finding a better price elsewhere, changing their mind or no longer needing the item, high shipping costs, and other beauty/personal care products.
+            </p>
+        </div>
+    </main>
+</body>
+</html>
