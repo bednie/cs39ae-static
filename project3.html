@@ -39,18 +39,82 @@
         p {
             color: #34495e;
         }
-        img {
-            max-width: 100%;
-            margin: 20px 0;
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .viz-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .viz-section {
+            display: flex;
+            flex-direction: column;
+            align-items: left;
             margin: 40px 0;
         }
         .viz-description {
             color: #666;
             font-size: 0.95em;
-            margin: 10px 0;
+            margin: 10px 0 20px 0;
+            max-width: 90%;
             line-height: 1.5;
+        }
+        .viz-separator {
+            margin: 40px 0;
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+        }
+        .elevation-filter {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .spaghetti-line {
+            fill: none;
+            stroke-width: 1;
+            opacity: 0.3;
+        }
+        .spaghetti-line:hover {
+            stroke-width: 2;
+            opacity: 1;
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            margin: 0 10px;
+        }
+        .nav a:hover {
+            background-color: #2980b9;
+        }
+        .range-slider {
+            margin: 30px 10px;
+            padding: 0 10px;
+        }
+        .noUi-connect {
+            background: #3498db;
+        }
+        .slider-values {
+            margin-top: 10px;
+            text-align: center;
+            color: #666;
         }
     </style>
 </head>
@@ -63,6 +127,7 @@
         <div class="subtitle">Blair Ednie, CS-39AE</div>
       <p>Dataset: <a href="https://www.kaggle.com/datasets/swathiunnikrishnan/amazon-consumer-behaviour-dataset">"Amazon consumer Behaviour Dataset
 " by Swathi Menon</a></p>
+    <p>Tableau Dashboard: <a href="https://public.tableau.com/views/Blair_Ednie_Project_3_Amazon_Consumer/Dashboard1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link">Identifying High-Impact Customer Segments for Targeted Marketing for Amazon</a></p>
     </header>
     <main>
         <div class="viz-section">
